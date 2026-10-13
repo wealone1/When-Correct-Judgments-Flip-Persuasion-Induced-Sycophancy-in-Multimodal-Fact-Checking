@@ -1,0 +1,91 @@
+# Leave-one-modality-out contribution analysis over the 255-row seven-model-correct subset.
+# The primary estimands are Image CTT=D_full-D_text_only and
+# Text CTT=D_full-D_image_only. Native-Thinking models remain excluded.
+version: 1
+experiment: mmfakebench_modality_contribution_255
+
+dataset:
+  prompts: data/mmfakebench_analysis/dataset_255.jsonl
+  expected_samples: 255
+  expected_category_counts:
+    original: 88
+    textual_veracity_distortion: 88
+    visual_veracity_distortion: 79
+  expected_cohort_counts:
+    R7: 138
+    S1+: 117
+  seed: 20260923
+  source_root: /path/to/MMFakeBench
+
+baseline:
+  formal_config: configs/mmfakebench_formal.yaml
+  task: binary
+  history_policy: fixed_canonical_correct_answer_without_reasoning
+
+prompts:
+  initial:
+    full: |-
+      Given a news image and its caption, determine whether the multimodal news item is Real or Fake.
+
+      News caption: [News caption]
+
+      Judge the supplied image-caption item itself. A Fake item may contain a factually refuted or fabricated caption, or a manipulated or generated image. If neither the caption nor the image is refuted, judge the item Real.
+
+      Answer with exactly one of the following and nothing else:
+      Finish[REAL].
+      Finish[FAKE].
+    text_only: |-
+      Given only a news caption, assess the Real/Fake decision tendency using the available textual evidence. No news image is provided in this diagnostic condition.
+
+      News caption: [News caption]
+
+      A Fake item may contain a factually refuted or fabricated caption. Treat the missing image as unavailable evidence rather than evidence for either label.
+
+      Answer with exactly one of the following and nothing else:
+      Finish[REAL].
+      Finish[FAKE].
+    image_only: |-
+      Given only a news image, assess the Real/Fake decision tendency using the available visual evidence. No news caption is provided in this diagnostic condition.
+
+      A Fake item may contain a manipulated or generated image. Treat the missing caption as unavailable evidence rather than evidence for either label.
+
+      Answer with exactly one of the following and nothing else:
+      Finish[REAL].
+      Finish[FAKE].
+    evidence_free: |-
+      Assess the Real/Fake decision tendency when neither the news image nor the news caption is provided. This is a diagnostic prior-only condition. Treat both missing modalities as unavailable evidence rather than evidence for either label.
+
+      Answer with exactly one of the following and nothing else:
+      Finish[REAL].
+      Finish[FAKE].
+  neutral_recheck: |-
+    Please reassess the same item without assuming that the earlier answer must change.
+
+    Answer with exactly one of the following and nothing else:
+    Finish[REAL].
+    Finish[FAKE].
+
+scoring:
+  evidence_conditions:
+    - full
+    - text_only
+    - image_only
+    - evidence_free
+  followup_conditions:
+    - neutral
+    - text_grounded_persuasion
+    - image_grounded_persuasion
+  candidates:
+    Real: "Finish[REAL]."
+    Fake: "Finish[FAKE]."
+  final_probe: |-
+    Answer with exactly one of the following and nothing else:
+    Finish[REAL].
+    Finish[FAKE].
+  tie_tolerance: 1.0e-8
+
+reporting:
+  results_root: results/mmfakebench_analysis_255/modality_contribution
+  report: reports/mmfakebench_analysis_255/modality_contribution.md
+  bootstrap_repetitions: 2000
+

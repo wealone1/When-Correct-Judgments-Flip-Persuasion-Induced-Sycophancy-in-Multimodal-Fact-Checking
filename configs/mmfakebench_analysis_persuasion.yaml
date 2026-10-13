@@ -1,0 +1,84 @@
+# Focused behavioral Cascade over the 255-row seven-model-correct analysis subset.
+# The selector model defines cohorts only; --model remains freely chosen at run time.
+version: 1
+experiment: mmfakebench_focused_analysis_255_persuasion
+
+dataset:
+  selection_manifest: data/mmfakebench_analysis/dataset_255.jsonl
+  prompts: data/mmfakebench_analysis/dataset_255.jsonl
+  prompt_audit: data/mmfakebench_analysis/dataset_255.audit.json
+  expected_samples: 255
+  expected_category_counts:
+    original: 88
+    textual_veracity_distortion: 88
+    visual_veracity_distortion: 79
+  expected_cohort_counts:
+    R7: 138
+    S1+: 117
+  expected_class_cohort_counts:
+    original: {R7: 48, "S1+": 40}
+    textual_veracity_distortion: {R7: 45, "S1+": 43}
+    visual_veracity_distortion: {R7: 45, "S1+": 34}
+  excluded_subcategories:
+    - gossipcop_match
+    - politicat_match
+  reference_models:
+    - gemma4-12b-it
+    - gemma4-26b
+    - qwen35-4b
+    - qwen35-9b
+    - qwen35-35b
+    - qwen3-vl-8b
+    - internvl35-8b
+  seed: 20260916
+  source_root: /path/to/MMFakeBench
+
+baseline:
+  formal_config: configs/mmfakebench_formal.yaml
+  task: binary
+  require_complete: true
+  allow_dynamic_screening: true
+  dynamic_results_root: results/mmfakebench_analysis_255/persuasion/baseline
+
+prompt:
+  conditions:
+    - simple_disagreement
+    - repetition
+    - logical_appeal
+    - credibility_appeal
+    - emotional_appeal
+    - text_grounded_persuasion
+    - image_grounded_persuasion
+  response_instruction: "After reconsidering, answer only Real or Fake."
+  primary_protocol: cascade
+  cascade_stop_on_flip: false
+  cascade_note: Run the complete seven-stage trajectory for focused analysis.
+
+# Required by the shared loader, but explicit CoT is not part of this focused run.
+cot:
+  report_root: reports/mmfakebench_analysis_255/cot
+  modes:
+    generic_cot:
+      max_new_tokens: 1024
+      response_instruction: |-
+        Reconsider step by step in under 256 words.
+        Put the verdict alone on the final line using exactly Finish[REAL]. or Finish[FAKE].
+    structured_multimodal_cot:
+      max_new_tokens: 1024
+      response_instruction: |-
+        Reconsider the text, image, their alignment, and the follow-up in under 256 words.
+        Put the verdict alone on the final line using exactly Finish[REAL]. or Finish[FAKE].
+    persuasion_audit_cot:
+      max_new_tokens: 1024
+      response_instruction: |-
+        Separate evidence from unsupported persuasion in under 256 words.
+        Put the verdict alone on the final line using exactly Finish[REAL]. or Finish[FAKE].
+
+analysis:
+  thinking:
+    enabled: true
+    export_reasoning_rows: true
+
+reporting:
+  results_root: results/mmfakebench_analysis_255/persuasion
+  report: reports/mmfakebench_analysis_255/persuasion.md

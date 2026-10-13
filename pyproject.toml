@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multimodal-persuasion-eval"
+version = "0.1.0"
+description = "Anonymous MMFakeBench persuasion evaluation code"
+requires-python = ">=3.10"
+dependencies = [
+  "accelerate>=1.2",
+  "packaging>=24.0",
+  "Pillow>=10.0",
+  "PyYAML>=6.0",
+  "safetensors>=0.4",
+  "torch>=2.6",
+  "torchvision>=0.21",
+  "transformers>=5.14.1,<6",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+

@@ -1,0 +1,189 @@
+# Full MMFakeBench formal evaluation: all original, textual-distortion, and
+# visual-distortion samples from val+test. Cross-modal mismatch is excluded.
+version: 1
+experiment: mmfakebench_formal_original_textual_visual
+
+dataset:
+  source_root: /path/to/MMFakeBench
+  splits: [val, test]
+  target_categories:
+    - original
+    - textual_veracity_distortion
+    - visual_veracity_distortion
+  expected_samples: 7700
+  expected_label_counts:
+    Fake: 4400
+    Real: 3300
+  expected_category_counts:
+    original: 3300
+    textual_veracity_distortion: 3300
+    visual_veracity_distortion: 1100
+  seed: 20260907
+  output: data/mmfakebench_formal/dataset_7700.jsonl
+
+prompts:
+  binary:
+    name: mmfakebench_binary_real_fake_v1
+    source: Project binary adaptation; labels follow MMFakeBench gt_answers
+    template: |
+      Given a news image and its caption, determine whether the multimodal news item is Real or Fake.
+
+      News caption: [News caption]
+
+      Judge the supplied image-caption item itself. A Fake item may contain a factually refuted or fabricated caption, or a manipulated or generated image. If neither the caption nor the image is refuted, judge the item Real.
+
+      Answer with exactly one of the following and nothing else:
+      Finish[REAL].
+      Finish[FAKE].
+
+  modality:
+    name: mmfakebench_text_image_localization_v1
+    source: Adapted from the MMFakeBench ICLR 2025 standard three-stage prompt (mismatch branch removed because mismatch samples are excluded)
+    template: |
+      Given a multimodal news item, it contains both a news caption and a news image. News caption is: [News caption]
+
+      To make an accurate judgment, follow these steps in order:
+      1. Is there credible objective evidence refuting the news caption? If yes, answer exactly: Finish[TEXT REFUTES]. If no, continue to step 2.
+      2. Is there credible objective evidence refuting the news image, including evidence that it is manipulated or generated? If yes, answer exactly: Finish[IMAGE REFUTES]. If no, answer exactly: Finish[ORIGINAL].
+
+      Answer with exactly one of the following and nothing else:
+      Finish[TEXT REFUTES].
+      Finish[IMAGE REFUTES].
+      Finish[ORIGINAL].
+
+inference:
+  do_sample: false
+  temperature: 0.0
+  repetitions: 1
+  max_new_tokens: 128
+  dtype: bfloat16
+  device_map: auto
+  attention: auto
+  local_files_only: true
+  log_every: 10
+
+reporting:
+  results_root: results/mmfakebench_formal
+  report_root: reports/mmfakebench_formal
+
+models:
+  gemma4-12b-it:
+    display_name: Gemma-4-12B-IT
+    hub_id: google/gemma-4-12B-it
+    local_path: model/Google/gemma-4-12B-it
+    output_name: gemma4_12b_it
+    enabled: true
+    native_multimodal: true
+    model_class: auto_multimodal
+    thinking: false
+    template_kwargs:
+      enable_thinking: false
+
+  gemma4-26b:
+    display_name: Gemma-4-26B-A4B-IT
+    hub_id: google/gemma-4-26B-A4B-it
+    local_path: model/google/gemma-4-26B-A4B-it
+    output_name: gemma4_26b
+    enabled: true
+    native_multimodal: true
+    model_class: auto_multimodal
+    thinking: false
+    template_kwargs:
+      enable_thinking: false
+
+  qwen35-4b:
+    display_name: Qwen3.5-4B Non-thinking
+    hub_id: Qwen/Qwen3.5-4B
+    local_path: model/Qwen/Qwen3.5-4B
+    output_name: qwen35_4b_nonthinking
+    enabled: true
+    native_multimodal: true
+    model_class: auto_multimodal
+    thinking: false
+    template_kwargs:
+      enable_thinking: false
+
+  qwen35-4b-thinking-4096:
+    display_name: Qwen3.5-4B-Thinking-4096
+    hub_id: Qwen/Qwen3.5-4B
+    local_path: model/Qwen/Qwen3.5-4B
+    output_name: qwen35_4b_thinking_4096
+    enabled: true
+    native_multimodal: true
+    model_class: auto_multimodal
+    thinking: true
+    max_new_tokens: 4096
+    template_kwargs:
+      enable_thinking: true
+
+  qwen35-9b:
+    display_name: Qwen3.5-9B Non-thinking
+    hub_id: Qwen/Qwen3.5-9B
+    local_path: model/Qwen/Qwen3.5-9B
+    output_name: qwen35_9b_nonthinking
+    enabled: true
+    native_multimodal: true
+    model_class: auto_multimodal
+    thinking: false
+    template_kwargs:
+      enable_thinking: false
+
+  qwen35-9b-thinking-4096:
+    display_name: Qwen3.5-9B-Thinking-4096
+    hub_id: Qwen/Qwen3.5-9B
+    local_path: model/Qwen/Qwen3.5-9B
+    output_name: qwen35_9b_thinking_4096
+    enabled: true
+    native_multimodal: true
+    model_class: auto_multimodal
+    thinking: true
+    max_new_tokens: 4096
+    template_kwargs:
+      enable_thinking: true
+
+  qwen35-35b:
+    display_name: Qwen3.5-35B-A3B Non-thinking
+    hub_id: Qwen/Qwen3.5-35B-A3B
+    local_path: model/Qwen/Qwen3.5-35B-A3B
+    output_name: qwen35_35b_nonthinking
+    enabled: true
+    native_multimodal: true
+    model_class: auto_multimodal
+    thinking: false
+    template_kwargs:
+      enable_thinking: false
+
+  internvl35-8b:
+    display_name: InternVL3.5-8B
+    hub_id: OpenGVLab/InternVL3_5-8B-HF
+    local_path: model/OpenGVLab/InternVL3_5-8B-HF
+    output_name: internvl35_8b
+    enabled: true
+    native_multimodal: true
+    model_class: auto_multimodal
+    trust_remote_code: true
+    thinking: false
+    template_kwargs: {}
+
+  qwen3-vl-8b:
+    display_name: Qwen3-VL-8B-Instruct
+    hub_id: Qwen/Qwen3-VL-8B-Instruct
+    local_path: model/Qwen/Qwen3-VL-8B-Instruct
+    output_name: qwen3_vl_8b
+    enabled: true
+    native_multimodal: true
+    model_class: qwen3_vl
+    thinking: false
+    template_kwargs: {}
+
+  qwen3-vl-8b-thinking-4096:
+    display_name: Qwen3-VL-8B-Thinking-4096
+    hub_id: Qwen/Qwen3-VL-8B-Thinking
+    local_path: model/Qwen/Qwen3-VL-8B-Thinking
+    output_name: qwen3_vl_8b_thinking_4096
+    enabled: true
+    native_multimodal: true
+    model_class: qwen3_vl
+    thinking: true
+    max_new_tokens: 4096
+    template_kwargs: {}

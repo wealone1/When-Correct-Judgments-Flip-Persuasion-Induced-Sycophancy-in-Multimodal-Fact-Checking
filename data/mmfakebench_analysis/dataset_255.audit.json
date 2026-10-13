@@ -1,0 +1,42 @@
+{
+  "class_cohort_counts": {
+    "original": {
+      "R7": 48,
+      "S1+": 40
+    },
+    "textual_veracity_distortion": {
+      "R7": 45,
+      "S1+": 43
+    },
+    "visual_veracity_distortion": {
+      "R7": 45,
+      "S1+": 34
+    }
+  },
+  "class_counts": {
+    "original": 88,
+    "textual_veracity_distortion": 88,
+    "visual_veracity_distortion": 79
+  },
+  "cohort_counts": {
+    "R7": 138,
+    "S1+": 117
+  },
+  "derivation": "The frozen 300-row R7/S1+ diagnostic set restricted to samples with a correct, parseable InternVL3.5-8B formal binary baseline.",
+  "output": "data/mmfakebench_analysis/dataset_255.jsonl",
+  "output_sha256": "2727a05681dd2c957b7070818c53c18c09640087cf9d16f4665c79922c6065d9",
+  "qc_passed": true,
+  "reference_models": [
+    "gemma4-12b-it",
+    "gemma4-26b",
+    "qwen35-4b",
+    "qwen35-9b",
+    "qwen35-35b",
+    "qwen3-vl-8b",
+    "internvl35-8b"
+  ],
+  "sample_count": 255,
+  "source_prompts": "data/mmfakebench_modality_persuasion/prompts_3599.jsonl",
+  "source_prompts_sha256": "6028a353f6baef33158bef235116c05148b912c974f4a9b4a1f5d329a10f4ac8",
+  "version": "mmfakebench-focused-analysis-v2-shared-correct-255"
+}

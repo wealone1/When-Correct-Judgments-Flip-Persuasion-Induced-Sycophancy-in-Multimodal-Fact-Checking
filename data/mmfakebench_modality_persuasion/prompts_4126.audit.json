@@ -1,0 +1,59 @@
+{
+  "category_counts": {
+    "original": 1783,
+    "textual_veracity_distortion": 1685,
+    "visual_veracity_distortion": 658
+  },
+  "condition_order": [
+    "simple_disagreement",
+    "repetition",
+    "logical_appeal",
+    "credibility_appeal",
+    "emotional_appeal",
+    "text_grounded_persuasion",
+    "image_grounded_persuasion"
+  ],
+  "excluded_subcategories": [
+    "gossipcop_match",
+    "politicat_match"
+  ],
+  "flagged_count": 0,
+  "flagged_examples": [],
+  "generator": "formal-modality-persuasion-v2-filtered-4126",
+  "input": "data/mmfakebench_formal/intersection_binary_6models/experiment_subset_4126.jsonl",
+  "input_sha256": "440ed109765a7ef3259a742a8dc309557f4345ca869c2d422198aceaeabc928a",
+  "output": "data/mmfakebench_modality_persuasion/prompts_4126.jsonl",
+  "output_sha256": "16b838d44192a79650a7cebe8f9e2f1a6b572f9b079b5c85cffdfcc5d7ace60d",
+  "qc_passed": true,
+  "sample_count": 4126,
+  "word_counts": {
+    "credibility_appeal": {
+      "max": 70,
+      "min": 59
+    },
+    "emotional_appeal": {
+      "max": 60,
+      "min": 59
+    },
+    "image_grounded_persuasion": {
+      "max": 72,
+      "min": 63
+    },
+    "logical_appeal": {
+      "max": 72,
+      "min": 59
+    },
+    "repetition": {
+      "max": 59,
+      "min": 59
+    },
+    "simple_disagreement": {
+      "max": 20,
+      "min": 20
+    },
+    "text_grounded_persuasion": {
+      "max": 82,
+      "min": 70
+    }
+  }
+}

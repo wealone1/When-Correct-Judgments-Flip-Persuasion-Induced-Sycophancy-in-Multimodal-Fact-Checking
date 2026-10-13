@@ -1,0 +1,49 @@
+# Focused teacher-forced margins over the 255-row seven-model-correct subset.
+# No evaluation model is hard-coded; choose it with --model.
+version: 1
+experiment: mmfakebench_focused_analysis_255_margin
+
+dataset:
+  prompts: data/mmfakebench_analysis/dataset_255.jsonl
+  prompt_audit: data/mmfakebench_analysis/dataset_255.audit.json
+  expected_samples: 255
+  expected_category_counts:
+    original: 88
+    textual_veracity_distortion: 88
+    visual_veracity_distortion: 79
+  expected_cohort_counts:
+    R7: 138
+    S1+: 117
+  expected_class_cohort_counts:
+    original: {R7: 48, "S1+": 40}
+    textual_veracity_distortion: {R7: 45, "S1+": 43}
+    visual_veracity_distortion: {R7: 45, "S1+": 34}
+  seed: 20260916
+  source_root: /path/to/MMFakeBench
+
+baseline:
+  formal_config: configs/mmfakebench_formal.yaml
+  task: binary
+  require_frozen_correct_answer: true
+
+scoring:
+  protocols:
+    - independent
+    - cascade
+  candidates:
+    Real: "Finish[REAL]."
+    Fake: "Finish[FAKE]."
+  final_probe: |-
+    Answer with exactly one of the following and nothing else:
+    Finish[REAL].
+    Finish[FAKE].
+  tie_tolerance: 1.0e-8
+  cascade_history_policy: sequence_argmax_keep_previous_on_exact_tie
+
+reporting:
+  results_root: results/mmfakebench_analysis_255/margin
+  report: reports/mmfakebench_analysis_255/margin.md
+  behavioral_persuasion_configs:
+    independent: configs/mmfakebench_modality_persuasion.yaml
+    cascade: configs/mmfakebench_analysis_persuasion.yaml
+
