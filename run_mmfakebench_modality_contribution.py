@@ -5,7 +5,7 @@
 # Author: project team
 # Last Updated: 2026-10-13
 # Purpose: Run and aggregate MMFakeBench image/text persuasion contribution scores.
-# Input: Frozen 300-row analysis set, grounded persuasion prompts, one non-thinking VLM.
+# Input: Frozen 255-row analysis set, grounded persuasion prompts, one non-thinking VLM.
 # Output: Matched ablation margins, CTT metrics, model summaries, and one report.
 # Run Example:
 # python run_mmfakebench_modality_contribution.py validate --skip-images

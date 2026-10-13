@@ -7,7 +7,7 @@ Anonymous submission code for evaluating whether multimodal language models chan
 1. **Formal baseline** on 7,700 MMFakeBench examples:
    - binary `Real`/`Fake` prediction;
    - error-modality localization (`ORIGINAL`, `TEXT REFUTES`, or `IMAGE REFUTES`).
-2. **Seven-condition persuasion** on the frozen 4,126-example shared-correct subset:
+2. **Seven-condition persuasion** on the frozen 3,599-example seven-model shared-correct subset:
    - simple disagreement;
    - repetition;
    - logical appeal;
@@ -19,7 +19,7 @@ Anonymous submission code for evaluating whether multimodal language models chan
    - generic CoT;
    - structured multimodal CoT;
    - persuasion-audit CoT.
-4. **Focused cascade** on the frozen 300-example diagnostic set.
+4. **Focused cascade** on the corresponding frozen 255-example diagnostic set.
 5. **Teacher-forced full-label margin analysis**, in independent and cascade protocols.
 6. **Leave-one-modality-out contribution analysis**.
 
@@ -189,6 +189,8 @@ Outputs are written below `results/` according to the selected config. These gen
 ## Notes on reproducibility
 
 - Decoding is greedy (`do_sample: false`) unless a model-specific thinking configuration explicitly requires otherwise.
+- The 3,599-example pool requires a correct, parseable formal binary baseline from all seven reported non-thinking models, including InternVL3.5-8B.
+- The 255-example diagnostic set is the earlier R7/S1+ analysis cohort restricted to this same InternVL-correct pool.
 - Formal prompts, seven persuasion messages, CoT instructions, candidate labels, and margin probes are frozen in `configs/` and `data/`.
 - Margin scores use teacher forcing over the complete label sequence (`Finish[REAL].` or `Finish[FAKE].`) and exclude EOS.
 - Absolute paths in the original experiment records were replaced by `/path/to/MMFakeBench`; image resolution uses `--source-root` plus each row's relative source path.

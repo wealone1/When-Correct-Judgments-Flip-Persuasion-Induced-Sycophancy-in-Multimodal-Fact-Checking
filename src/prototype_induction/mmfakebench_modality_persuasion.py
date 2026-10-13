@@ -4,7 +4,7 @@
 # Author: project team
 # Last Updated: 2026-09-14
 # Purpose: Evaluate direct and explicit-CoT persuasion after formal baseline screening.
-# Input: Fixed 4,126-row prompts, embedded/dynamic binary baselines, images, model config.
+# Input: Fixed 3,599-row prompts, embedded/dynamic binary baselines, images, model config.
 # Output: Independent/cascade predictions, FR metrics, and separated reasoning analyses.
 # === FILE META END ===
 """Modality-specific persuasion over the formal MMFakeBench evaluation set."""
@@ -426,21 +426,34 @@ def validate_prompts(
             cohort_counts == expected_cohorts,
             f"found={cohort_counts}, expected={expected_cohorts}",
         )
-        expected_cell = int(config["dataset"].get("expected_class_cohort_count", 0))
         cells = Counter(
             (str(row.get("fake_cls")), str(row.get("analysis_cohort")))
             for row in prompts
         )
-        expected_cells = {
-            (fake_cls, cohort): expected_cell
-            for fake_cls in expected_categories
-            for cohort in expected_cohorts
-        }
-        add(
-            "balanced_class_cohort_cells",
-            expected_cell > 0 and dict(cells) == expected_cells,
-            f"found={dict(sorted(cells.items()))}, expected_each={expected_cell}",
-        )
+        configured_cells = config["dataset"].get("expected_class_cohort_counts")
+        if configured_cells:
+            expected_cells = {
+                (str(fake_cls), str(cohort)): int(count)
+                for fake_cls, cohorts in configured_cells.items()
+                for cohort, count in cohorts.items()
+            }
+            add(
+                "expected_class_cohort_cells",
+                dict(cells) == expected_cells,
+                f"found={dict(sorted(cells.items()))}, expected={dict(sorted(expected_cells.items()))}",
+            )
+        else:
+            expected_cell = int(config["dataset"].get("expected_class_cohort_count", 0))
+            expected_cells = {
+                (fake_cls, cohort): expected_cell
+                for fake_cls in expected_categories
+                for cohort in expected_cohorts
+            }
+            add(
+                "balanced_class_cohort_cells",
+                expected_cell > 0 and dict(cells) == expected_cells,
+                f"found={dict(sorted(cells.items()))}, expected_each={expected_cell}",
+            )
     excluded = set(map(str, config["dataset"].get("excluded_subcategories", [])))
     excluded_present = [
         str(row["sample_id"])
@@ -828,7 +841,7 @@ def _dynamic_baseline_record(
         "backend_metadata": dict(backend_metadata),
         "generation_metadata": generation.metadata if generation else {},
         "error": error,
-        "screening_scope": "filtered_shared_correct_4126",
+        "screening_scope": "filtered_shared_correct_3599",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -1816,7 +1829,7 @@ def render_report(summaries: Sequence[Mapping[str, Any]]) -> str:
     lines = [
         "# MMFakeBench Modality-Specific Persuasion",
         "",
-        "Primary results use independent forks over the filtered 4,126-row six-model "
+        "Primary results use independent forks over the filtered 3,599-row seven-model "
         "Non-thinking intersection. Thinking models are screened on this pool and only their "
         "own baseline-correct samples continue immediately to persuasion.",
         "",
@@ -1905,7 +1918,7 @@ def aggregate_all(
         report = _resolve(config["reporting"]["report"], project_root)
     else:
         report_root = _resolve(
-            config.get("cot", {}).get("report_root", "reports/mmfakebench_cot_4126"),
+            config.get("cot", {}).get("report_root", "reports/mmfakebench_cot_3599"),
             project_root,
         )
         report = report_root / f"{reasoning_mode}.md"

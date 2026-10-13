@@ -5,7 +5,7 @@
 # Author: project team
 # Last Updated: 2026-10-13
 # Purpose: Run direct or explicit-CoT seven-condition MMFakeBench persuasion.
-# Input: Filtered 4,126-row pool, fixed prompts, images, and target models.
+# Input: Filtered 3,599-row seven-model-correct pool, fixed prompts, images, and target models.
 # Output: Independent/cascade predictions, FR metrics, and Thinking diagnostics.
 # Run Example:
 # python run_mmfakebench_modality_persuasion.py validate --source-root /path/to/MMFakeBench

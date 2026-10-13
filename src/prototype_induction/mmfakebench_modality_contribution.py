@@ -4,7 +4,7 @@
 # Author: project team
 # Last Updated: 2026-09-23
 # Purpose: Measure how persuasion changes image/text contributions to Real/Fake decisions.
-# Input: Frozen 300-row analysis set, paired grounded persuasion, images, one VLM.
+# Input: Frozen 255-row analysis set, paired grounded persuasion, images, one VLM.
 # Output: Teacher-forced scores, leave-one-modality-out CTT metrics, and reports.
 # === FILE META END ===
 """Teacher-forced leave-one-modality-out persuasion contribution analysis."""

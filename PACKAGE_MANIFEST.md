@@ -6,8 +6,8 @@
 - Eight runtime source modules required by those entry points.
 - Five formal experiment configurations.
 - Frozen 7,700-row baseline manifest.
-- Frozen 4,126-row shared-correct manifest and seven-condition persuasion inputs.
-- Frozen 300-row diagnostic manifest and audit metadata.
+- Frozen 3,599-row seven-model shared-correct manifest and persuasion inputs.
+- Frozen 255-row diagnostic manifest and audit metadata.
 - Four regression-test modules covering the submitted experiment paths.
 - Minimal installation and reproduction documentation.
 

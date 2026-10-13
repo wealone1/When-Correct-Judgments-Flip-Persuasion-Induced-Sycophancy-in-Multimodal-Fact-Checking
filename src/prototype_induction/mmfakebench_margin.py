@@ -4,7 +4,7 @@
 # Author: project team
 # Last Updated: 2026-09-23
 # Purpose: Measure teacher-forced Real/Fake correctness margins before and after persuasion.
-# Input: Frozen 4,126-row persuasion prompts, MMFakeBench images, non-thinking VLMs.
+# Input: Frozen 255-row diagnostic prompts, MMFakeBench images, non-thinking VLMs.
 # Output: Baseline, independent, and full-cascade sequence-log-likelihood margins.
 # === FILE META END ===
 """Teacher-forced sequence margins for the MMFakeBench persuasion experiment."""
@@ -488,7 +488,7 @@ def frozen_baseline_models(
     """Return model keys embedded when the frozen cohort was constructed.
 
     Adding a held-out model to the central registry must not retroactively make
-    the fixed six-model selection manifest invalid.
+    the fixed seven-model selection manifest invalid.
     """
     return sorted(
         {
@@ -558,21 +558,34 @@ def validate_experiment(
             cohort_counts == expected_cohorts,
             f"found={cohort_counts}, expected={expected_cohorts}",
         )
-        expected_cell = int(config["dataset"].get("expected_class_cohort_count", 0))
         cell_counts = Counter(
             (str(row.get("fake_cls")), str(row.get("analysis_cohort")))
             for row in prompts
         )
-        expected_cells = {
-            (fake_cls, cohort): expected_cell
-            for fake_cls in expected_counts
-            for cohort in expected_cohorts
-        }
-        add(
-            "balanced_class_cohort_cells",
-            expected_cell > 0 and dict(cell_counts) == expected_cells,
-            f"found={dict(sorted(cell_counts.items()))}, expected_each={expected_cell}",
-        )
+        configured_cells = config["dataset"].get("expected_class_cohort_counts")
+        if configured_cells:
+            expected_cells = {
+                (str(fake_cls), str(cohort)): int(count)
+                for fake_cls, cohorts in configured_cells.items()
+                for cohort, count in cohorts.items()
+            }
+            add(
+                "expected_class_cohort_cells",
+                dict(cell_counts) == expected_cells,
+                f"found={dict(sorted(cell_counts.items()))}, expected={dict(sorted(expected_cells.items()))}",
+            )
+        else:
+            expected_cell = int(config["dataset"].get("expected_class_cohort_count", 0))
+            expected_cells = {
+                (fake_cls, cohort): expected_cell
+                for fake_cls in expected_counts
+                for cohort in expected_cohorts
+            }
+            add(
+                "balanced_class_cohort_cells",
+                expected_cell > 0 and dict(cell_counts) == expected_cells,
+                f"found={dict(sorted(cell_counts.items()))}, expected_each={expected_cell}",
+            )
     mismatch = [row for row in prompts if str(row.get("fake_cls")) == "mismatch"]
     add("mismatch_excluded", not mismatch, f"violations={len(mismatch)}")
     missing = [
